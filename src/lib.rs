@@ -1,7 +1,5 @@
 // This is a known design  state  using Enum
 use std::io;
-use std::thread;
-use std::time::Duration;
 
 #[derive(Debug, PartialEq)]
 enum State {
@@ -62,7 +60,10 @@ pub struct App {
 
 impl App {
     pub fn new(name: &str, age: i32) -> Option<App> {
-        let valid_age = App::verify_age(age).unwrap();
+        let valid_age = match App::verify_age(age) {
+            Some(v) => v,
+            None => return None,
+        };
         Some(App {
             state: State::Menu,
             valid: valid_age,
@@ -100,7 +101,10 @@ impl App {
 
                 State::Airtime => self.airtime_state(),
                 State::Data => self.data_state(),
-                State::Exit => break,
+                State::Exit => {
+                    println!("Quitting App ...");
+                    break;
+                }
             };
         }
     }
@@ -133,7 +137,7 @@ impl App {
 
     fn account_state(&mut self) -> State {
         println!(
-            "Name: {}\nAge: {}\n\n\t------------ Balance: ${} -----------",
+            "\nName: {}\nAge: {}\n\t---- Balance: ${} ----",
             self.name, self.age, self.bal
         );
         State::Menu
@@ -141,7 +145,7 @@ impl App {
 
     fn balance_state(&mut self) -> State {
         self.state = State::Balnce;
-        println!("Balance: {}", self.bal);
+        println!("\nBalance: {}", self.bal);
         println!("Interst: {}", self.intrest);
         println!("\n**---- HISTORY ----**\n");
         if self.history.is_empty() {
@@ -151,14 +155,12 @@ impl App {
                 println!("{}. {}", i + 1, h);
             }
         }
-        thread::sleep(Duration::from_secs(5));
         State::Menu
     }
 
     fn transfer_state(&mut self) -> State {
         let amt = App::input("Enter Ammount").parse::<f64>().unwrap_or(0.0);
         self.debit("Transfer", amt);
-        thread::sleep(Duration::from_secs(5));
         State::Menu
     }
 
@@ -168,7 +170,6 @@ impl App {
             .parse::<f64>()
             .unwrap_or(0.0);
         self.debit("Airtime purchase", amt);
-        thread::sleep(Duration::from_secs(5));
         State::Menu
     }
 
@@ -179,7 +180,6 @@ impl App {
             .unwrap_or(0.0);
 
         self.debit("Data purchase", amt);
-        thread::sleep(Duration::from_secs(5));
         State::Menu
     }
 
