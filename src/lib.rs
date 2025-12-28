@@ -4,8 +4,8 @@ use std::io;
 #[derive(Debug, PartialEq)]
 enum State {
     Menu,
-    AcoountDetails,
-    Balnce,
+    AcountDetails,
+    Balance,
     Transfer,
     Airtime,
     Data,
@@ -95,8 +95,8 @@ impl App {
         loop {
             self.state = match self.state {
                 State::Menu => self.menu_state(),
-                State::AcoountDetails => self.account_state(),
-                State::Balnce => self.balance_state(),
+                State::AcountDetails => self.account_state(),
+                State::Balance => self.balance_state(),
                 State::Transfer => self.transfer_state(),
 
                 State::Airtime => self.airtime_state(),
@@ -123,8 +123,8 @@ impl App {
 
         match input.and_then(Menus::from_number) {
             Some(Menus::Zero) => State::Exit,
-            Some(Menus::One) => State::AcoountDetails,
-            Some(Menus::Two) => State::Balnce,
+            Some(Menus::One) => State::AcountDetails,
+            Some(Menus::Two) => State::Balance,
             Some(Menus::Three) => State::Transfer,
             Some(Menus::Four) => State::Airtime,
             Some(Menus::Five) => State::Data,
@@ -144,7 +144,7 @@ impl App {
     }
 
     fn balance_state(&mut self) -> State {
-        self.state = State::Balnce;
+        self.state = State::Balance;
         println!("\nBalance: {}", self.bal);
         println!("Interst: {}", self.intrest);
         println!("\n**---- HISTORY ----**\n");
@@ -166,7 +166,7 @@ impl App {
 
     fn airtime_state(&mut self) -> State {
         self.state = State::Airtime;
-        let amt = App::input("Enter airtime ammount")
+        let amt = App::input("Enter airtime amount")
             .parse::<f64>()
             .unwrap_or(0.0);
         self.debit("Airtime purchase", amt);
@@ -175,7 +175,7 @@ impl App {
 
     fn data_state(&mut self) -> State {
         self.state = State::Data;
-        let amt = App::input("Enter data ammount")
+        let amt = App::input("Enter data amount")
             .parse::<f64>()
             .unwrap_or(0.0);
 
@@ -187,11 +187,11 @@ impl App {
 
     fn debit(&mut self, action: &str, amt: f64) {
         if amt <= 0.0 {
-            println!("Invalid ammount");
+            println!("Invalid amount");
             return;
         }
         if amt >= self.bal {
-            println!("Insuffcient Funds ...");
+            println!("Insufficient Funds ...");
             self.update_history(action, amt, false);
             return;
         }
@@ -203,7 +203,7 @@ impl App {
     fn update_history(&mut self, action: &str, amt: f64, status: bool) {
         if status {
             self.history
-                .push(format!("{} of ${} sucessfull", action, amt))
+                .push(format!("{} of ${} successfull", action, amt))
         } else {
             self.history.push(format!("{} of ${} failed", action, amt))
         }
@@ -276,7 +276,7 @@ mod tests {
         assert_eq!(app.bal, 800.0);
         assert_eq!(app.history.len(), 1);
         assert!(app.history[0].contains("Transfer"));
-        assert!(app.history[0].contains("sucessfull"));
+        assert!(app.history[0].contains("successfull"));
     }
 
     #[test]
