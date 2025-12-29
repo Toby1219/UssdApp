@@ -10,7 +10,7 @@ fn main() {
     let mut app = match App::new(&name, age) {
         Some(v) => v,
         None => {
-            eprintln!("Account creation for {} faild", name);
+            eprintln!("Account creation for {} failed", name);
             return;
         }
     };
